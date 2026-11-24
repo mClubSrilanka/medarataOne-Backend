@@ -5,18 +5,15 @@ import userRouter from "./routers/userRouter.js"
 import jwt from "jsonwebtoken"
 import productRouter from "./routers/productRouter.js"
 import dotenv from "dotenv"
-import cors from "cors" 
+import cors from "cors"
 import orderRouter from "./routers/orderRouter.js"
-
 dotenv.config()
 
 const app = express()
 
 
 app.use(bodyParser.json())
-// for all request accept.. will be change in future
-app.use (cors())
-    
+app.use(cors())
 
 app.use(
     (req,res,next)=>{
@@ -25,7 +22,7 @@ app.use(
             const token = value.replace("Bearer ","")
             jwt.verify(
                 token,
-                 process.env.JWT_SECRET,
+                process.env.JWT_SECRET,
                 (err,decoded)=>{
                     if(decoded == null){
                         res.status(403).json({
@@ -47,10 +44,16 @@ app.use(
 const connectionString = process.env.MONGO_URI
 
 
-mongoose.connect(connectionString)
-  .then(() => console.log("✅ Connected to database"))
-  .catch((error) => console.error("❌ DB Error:", error.message));
 
+mongoose.connect(connectionString).then(
+    ()=>{
+        console.log("Connected to database")
+    }
+).catch(
+    ()=>{
+        console.log("Failed to connect to the database")
+    }
+)
 
 
 
@@ -58,7 +61,9 @@ mongoose.connect(connectionString)
 
 app.use("/api/users", userRouter)
 app.use("/api/products",productRouter)
-app.use("/api/orders",orderRouter)
+app.use("/api/orders", orderRouter)
+
+
 
 app.listen(5000, 
    ()=>{
